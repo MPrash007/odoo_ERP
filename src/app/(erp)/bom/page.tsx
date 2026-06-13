@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 
 export default async function BoMPage() {
-  const boms = await prisma.billOfMaterial.findMany({
+  const boms = await prisma.bom.findMany({
     include: {
       product: true,
       items: {

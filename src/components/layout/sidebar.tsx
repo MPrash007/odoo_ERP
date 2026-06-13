@@ -66,7 +66,7 @@ const NAV_SECTIONS = [
   {
     label: "System",
     items: [
-      { title: "Audit Logs", href: "/audit", icon: ScrollText },
+      { title: "Audit Logs", href: "/audit-logs", icon: ScrollText },
       { title: "Settings", href: "/settings", icon: Settings },
     ],
   },
@@ -139,7 +139,7 @@ export function Sidebar() {
 
                 if (isCollapsed) {
                   return (
-                    <Tooltip key={item.href} delayDuration={0}>
+                    <Tooltip key={item.href}>
                       <TooltipTrigger 
                         className={linkClasses}
                         onClick={() => router.push(item.href)}
