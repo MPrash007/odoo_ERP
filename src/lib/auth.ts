@@ -51,7 +51,7 @@ export async function requirePermission(
   const user = await getCurrentUser();
 
   if (!hasPermission(user.role, module, action)) {
-    redirect("/unauthorized");
+    throw new Error(`Access Denied: You do not have permission to ${action} ${module}. Please contact your administrator if you need access.`);
   }
 
   return user;
