@@ -25,7 +25,7 @@ export function ProductForm({
   const [error, setError] = useState("");
 
   const form = useForm<ProductFormValues>({
-    resolver: zodResolver(productSchema),
+    resolver: zodResolver(productSchema) as any,
     defaultValues: initialData || {
       sku: "",
       name: "",
@@ -33,8 +33,8 @@ export function ProductForm({
       procurementType: "MANUFACTURING",
       procurementStrategy: "MTS",
       costPrice: 0,
-      salesPrice: null,
-      vendorId: null,
+      salesPrice: 0,
+      vendorId: "",
     },
   });
 

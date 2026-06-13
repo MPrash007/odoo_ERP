@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { PageHeader } from "@/components/layout/page-header";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
@@ -52,18 +53,14 @@ export function ProductDetailClient({ product }: { product: Product }) {
         ]}
         actions={
           <div className="flex gap-2">
-            <Button variant="outline" asChild>
-              <Link href="/products">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
-              </Link>
-            </Button>
-            <Button asChild className="bg-[#820AD1] hover:bg-[#9013D8]">
-              <Link href={`/products/${product.id}/edit`}>
-                <Edit className="w-4 h-4 mr-2" />
-                Edit Product
-              </Link>
-            </Button>
+            <Link href="/products" className={cn(buttonVariants({ variant: "outline" }))}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Link>
+            <Link href={`/products/${product.id}/edit`} className={cn(buttonVariants(), "bg-[#820AD1] hover:bg-[#9013D8]")}>
+              <Edit className="w-4 h-4 mr-2" />
+              Edit
+            </Link>
           </div>
         }
       />
