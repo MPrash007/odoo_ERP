@@ -2,6 +2,7 @@ import { auth, currentUser as getClerkUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { hasPermission, type Module, type Action } from "@/lib/rbac";
 import type { User } from "@prisma/client";
+import { redirect } from "next/navigation";
 
 export async function getCurrentUser(): Promise<User> {
   const { userId } = await auth();
@@ -29,7 +30,7 @@ export async function getCurrentUser(): Promise<User> {
         email,
         name,
         profileImage: clerkUser.imageUrl,
-        role: "ADMIN", // Default to admin for local dev testing
+        role: "NONE", // Default to NONE for local dev testing until admin approves
         status: "ACTIVE",
       },
     });
@@ -49,9 +50,7 @@ export async function requirePermission(
   const user = await getCurrentUser();
 
   if (!hasPermission(user.role, module, action)) {
-    throw new Error(
-      `Forbidden: Role '${user.role}' does not have '${action}' permission on '${module}'`
-    );
+    redirect("/unauthorized");
   }
 
   return user;

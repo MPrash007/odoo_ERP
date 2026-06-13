@@ -65,6 +65,7 @@ const PRIVILEGE_MATRIX = {
 };
 
 const getPermission = (val: string, role: UserRole, moduleName: string) => {
+  if (role === "NONE") return "NO";
   if (role === "ADMIN" || role === "OWNER") return val;
   
   if (role === "SALES" && moduleName !== "Sales" && moduleName !== "Product") return "NO";
@@ -197,6 +198,7 @@ export function UserDetailClient({ initialData }: { initialData: User }) {
                 onChange={(e) => setRole(e.target.value as UserRole)}
                 className="flex h-9 w-full rounded-md border border-[#E0E0E0] bg-white px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#820AD1]"
               >
+                <option value="NONE">NONE (Pending)</option>
                 <option value="ADMIN">ADMIN</option>
                 <option value="OWNER">OWNER</option>
                 <option value="SALES">SALES</option>

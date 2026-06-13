@@ -10,6 +10,7 @@ datasource db {
 // ─── ENUMS ──────────────────────────────────────────
 
 enum UserRole {
+  NONE
   ADMIN
   SALES
   PURCHASE
@@ -90,7 +91,7 @@ model User {
   phone        String?
   address      String?
   position     String?
-  role         UserRole   @default(SALES)
+  role         UserRole   @default(NONE)
   profileImage String?
   status       UserStatus @default(ACTIVE)
   createdAt    DateTime   @default(now())

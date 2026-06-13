@@ -57,7 +57,7 @@ export async function POST(req: Request) {
         email: email || `${id}@placeholder.com`,
         name,
         profileImage: image_url,
-        role: "SALES", // Default role
+        role: "NONE", // Default role
         status: "ACTIVE",
       },
     });
