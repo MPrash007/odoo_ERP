@@ -88,6 +88,7 @@ model User {
   name         String
   email        String     @unique
   phone        String?
+  address      String?
   position     String?
   role         UserRole   @default(SALES)
   profileImage String?
