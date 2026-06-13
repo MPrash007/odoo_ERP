@@ -139,7 +139,7 @@ export function Sidebar() {
 
                 if (isCollapsed) {
                   return (
-                    <Tooltip key={item.href} delayDuration={0}>
+                    <Tooltip key={item.href}>
                       <TooltipTrigger 
                         className={linkClasses}
                         onClick={() => router.push(item.href)}
