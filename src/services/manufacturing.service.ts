@@ -91,7 +91,9 @@ export class ManufacturingService {
       );
 
       return { componentRequirements, shortages };
-    });
+    },
+    { maxWait: 5000, timeout: 20000 }
+    );
   }
 
   /**
@@ -165,7 +167,9 @@ export class ManufacturingService {
         { status: "IN_PROGRESS" },
         tx
       );
-    });
+    },
+    { maxWait: 5000, timeout: 20000 }
+    );
   }
 
   /**
@@ -258,6 +262,8 @@ export class ManufacturingService {
         },
         tx
       );
-    });
+    },
+    { maxWait: 5000, timeout: 30000 }
+    );
   }
 }

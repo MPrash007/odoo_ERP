@@ -1,4 +1,4 @@
-"use client";
+"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -38,6 +38,11 @@ export function ManufacturingClient({ initialData }: { initialData: Manufacturin
       <PageHeader
         title="Manufacturing Orders"
         description="Track production, consume raw materials, and output finished goods."
+        actions={
+          <Link href="/manufacturing/new" className={cn(buttonVariants({ variant: "default" }), "bg-[#820AD1] hover:bg-[#9013D8]")}>
+            New Order
+          </Link>
+        }
       />
 
       <div className="mt-6 flex flex-col sm:flex-row gap-4 mb-6">
@@ -122,9 +127,9 @@ export function ManufacturingClient({ initialData }: { initialData: Manufacturin
                     </td>
                     <td className="px-4 py-3 text-center">
                       <Link href={`/manufacturing/${order.id}`} className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "text-[#820AD1]")}>
-  <Eye className="w-4 h-4 mr-1.5" />
-                          View
-</Link>
+                        <Eye className="w-4 h-4 mr-1.5" />
+                        View
+                      </Link>
                     </td>
                   </tr>
                 ))

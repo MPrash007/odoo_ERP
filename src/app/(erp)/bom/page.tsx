@@ -39,6 +39,7 @@ export default async function BoMPage() {
                 <th className="px-4 py-3">Finished Good</th>
                 <th className="px-4 py-3">Components</th>
                 <th className="px-4 py-3 text-right">Total Components</th>
+                <th className="px-4 py-3 text-center">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E0E0E0]">
@@ -62,6 +63,14 @@ export default async function BoMPage() {
                   </td>
                   <td className="px-4 py-4 text-right font-medium text-[#1A1A1A]">
                     {bom.items.length}
+                  </td>
+                  <td className="px-4 py-4 text-center">
+                    <Link
+                      href={`/bom/${bom.id}/edit`}
+                      className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "text-[#820AD1]")}
+                    >
+                      Edit
+                    </Link>
                   </td>
                 </tr>
               ))}

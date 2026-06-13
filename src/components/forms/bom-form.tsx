@@ -15,8 +15,15 @@ type BomFormValues = z.infer<typeof bomSchema>;
 
 export function BomForm({
   products,
+  initialData,
 }: {
   products: Array<{ id: string; name: string; sku: string; productType: string }>;
+  initialData?: {
+    id: string;
+    name: string;
+    productId: string;
+    items: Array<{ componentId: string; quantity: number }>;
+  };
 }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +31,7 @@ export function BomForm({
 
   const form = useForm<BomFormValues>({
     resolver: zodResolver(bomSchema) as any,
-    defaultValues: {
+    defaultValues: initialData || {
       productId: "",
       name: "",
       items: [{ componentId: "", quantity: 1 }],
@@ -48,15 +55,19 @@ export function BomForm({
     setError("");
 
     try {
-      const res = await fetch("/api/boms", {
-        method: "POST",
+      const isEditing = !!initialData;
+      const url = isEditing ? `/api/boms/${initialData.id}` : "/api/boms";
+      const method = isEditing ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
       if (!res.ok) {
         const result = await res.json();
-        throw new Error(result.error || "Failed to create Bill of Materials");
+        throw new Error(result.error || `Failed to ${isEditing ? "update" : "create"} Bill of Materials`);
       }
 
       router.push("/bom");
@@ -195,7 +206,7 @@ export function BomForm({
           {isLoading ? (
             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
           ) : null}
-          Create Bill of Materials
+          {initialData ? "Save Changes" : "Create Bill of Materials"}
         </Button>
       </div>
     </form>
