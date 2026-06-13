@@ -1,0 +1,352 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ENUMS ──────────────────────────────────────────
+
+enum UserRole {
+  ADMIN
+  SALES
+  PURCHASE
+  MANUFACTURING
+  INVENTORY
+  OWNER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum ProductType {
+  RAW_MATERIAL
+  SEMI_FINISHED
+  FINISHED_GOOD
+}
+
+enum ProcurementStrategy {
+  MTS // Make to Stock
+  MTO // Make to Order
+}
+
+enum ProcurementType {
+  PURCHASE
+  MANUFACTURING
+}
+
+enum SalesOrderStatus {
+  DRAFT
+  CONFIRMED
+  PARTIALLY_DELIVERED
+  DELIVERED
+  CANCELLED
+}
+
+enum PurchaseOrderStatus {
+  DRAFT
+  CONFIRMED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+}
+
+enum ManufacturingOrderStatus {
+  DRAFT
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum WorkOrderStatus {
+  PENDING
+  READY
+  IN_PROGRESS
+  PAUSED
+  COMPLETED
+}
+
+enum MovementType {
+  PURCHASE_RECEIPT
+  SALES_DELIVERY
+  MANUFACTURING_CONSUMPTION
+  MANUFACTURING_PRODUCTION
+  MANUAL_ADJUSTMENT
+}
+
+// ─── MODELS ─────────────────────────────────────────
+
+model User {
+  id           String     @id @default(cuid())
+  clerkId      String     @unique
+  name         String
+  email        String     @unique
+  phone        String?
+  position     String?
+  role         UserRole   @default(SALES)
+  profileImage String?
+  status       UserStatus @default(ACTIVE)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  // Relations
+  createdProducts       Product[]            @relation("ProductCreator")
+  createdSalesOrders    SalesOrder[]         @relation("SalesOrderCreator")
+  createdPurchaseOrders PurchaseOrder[]      @relation("PurchaseOrderCreator")
+  assignedMfgOrders     ManufacturingOrder[] @relation("MfgOrderAssignee")
+  createdMfgOrders      ManufacturingOrder[] @relation("MfgOrderCreator")
+  assignedWorkOrders    WorkOrder[]          @relation("WorkOrderAssignee")
+  stockLedgerEntries    StockLedger[]
+  auditLogs             AuditLog[]
+
+  @@map("users")
+}
+
+model Product {
+  id                  String              @id @default(cuid())
+  sku                 String              @unique
+  name                String
+  description         String?
+  productType         ProductType
+  salesPrice          Decimal             @default(0) @db.Decimal(12, 2)
+  costPrice           Decimal             @default(0) @db.Decimal(12, 2)
+  onHandQty           Int                 @default(0)
+  reservedQty         Int                 @default(0)
+  procurementStrategy ProcurementStrategy @default(MTS)
+  procurementType     ProcurementType     @default(PURCHASE)
+
+  // Relations
+  vendorId  String?
+  vendor    Vendor?  @relation(fields: [vendorId], references: [id])
+  createdBy String
+  creator   User     @relation("ProductCreator", fields: [createdBy], references: [id])
+
+  // Reverse relations
+  bom                 Bom?
+  salesOrderItems     SalesOrderItem[]
+  purchaseOrderItems  PurchaseOrderItem[]
+  bomComponents       BomItem[]            @relation("ComponentProduct")
+  manufacturingOrders ManufacturingOrder[]
+  stockLedgerEntries  StockLedger[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productType])
+  @@index([sku])
+  @@map("products")
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  salesOrders SalesOrder[]
+
+  @@map("customers")
+}
+
+model Vendor {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products       Product[]
+  purchaseOrders PurchaseOrder[]
+
+  @@map("vendors")
+}
+
+model SalesOrder {
+  id         String           @id @default(cuid())
+  customerId String
+  customer   Customer         @relation(fields: [customerId], references: [id])
+  status     SalesOrderStatus @default(DRAFT)
+  orderDate  DateTime         @default(now())
+  createdBy  String
+  creator    User             @relation("SalesOrderCreator", fields: [createdBy], references: [id])
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  items               SalesOrderItem[]
+  purchaseOrders      PurchaseOrder[]
+  manufacturingOrders ManufacturingOrder[]
+
+  @@index([status])
+  @@index([customerId])
+  @@map("sales_orders")
+}
+
+model SalesOrderItem {
+  id           String     @id @default(cuid())
+  salesOrderId String
+  salesOrder   SalesOrder @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
+  productId    String
+  product      Product    @relation(fields: [productId], references: [id])
+  quantity     Int
+  deliveredQty Int        @default(0)
+  unitPrice    Decimal    @db.Decimal(12, 2)
+
+  @@map("sales_order_items")
+}
+
+model PurchaseOrder {
+  id           String              @id @default(cuid())
+  vendorId     String
+  vendor       Vendor              @relation(fields: [vendorId], references: [id])
+  status       PurchaseOrderStatus @default(DRAFT)
+  salesOrderId String?
+  salesOrder   SalesOrder?         @relation(fields: [salesOrderId], references: [id])
+  createdBy    String
+  creator      User                @relation("PurchaseOrderCreator", fields: [createdBy], references: [id])
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  items PurchaseOrderItem[]
+
+  @@index([status])
+  @@index([vendorId])
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(cuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  productId       String
+  product         Product       @relation(fields: [productId], references: [id])
+  quantity        Int
+  receivedQty     Int           @default(0)
+  unitCost        Decimal       @db.Decimal(12, 2)
+
+  @@map("purchase_order_items")
+}
+
+model Bom {
+  id        String   @id @default(cuid())
+  productId String   @unique
+  product   Product  @relation(fields: [productId], references: [id])
+  name      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items               BomItem[]
+  operations          BomOperation[]
+  manufacturingOrders ManufacturingOrder[]
+
+  @@map("boms")
+}
+
+model BomItem {
+  id          String  @id @default(cuid())
+  bomId       String
+  bom         Bom     @relation(fields: [bomId], references: [id], onDelete: Cascade)
+  componentId String
+  component   Product @relation("ComponentProduct", fields: [componentId], references: [id])
+  quantity    Int
+
+  @@map("bom_items")
+}
+
+model BomOperation {
+  id            String @id @default(cuid())
+  bomId         String
+  bom           Bom    @relation(fields: [bomId], references: [id], onDelete: Cascade)
+  operationName String
+  duration      Int // in minutes
+  sequence      Int
+
+  @@map("bom_operations")
+}
+
+model ManufacturingOrder {
+  id           String                   @id @default(cuid())
+  productId    String
+  product      Product                  @relation(fields: [productId], references: [id])
+  bomId        String
+  bom          Bom                      @relation(fields: [bomId], references: [id])
+  salesOrderId String?
+  salesOrder   SalesOrder?              @relation(fields: [salesOrderId], references: [id])
+  quantity     Int
+  status       ManufacturingOrderStatus @default(DRAFT)
+  assignedTo   String?
+  assignee     User?                    @relation("MfgOrderAssignee", fields: [assignedTo], references: [id])
+  createdBy    String
+  creator      User                     @relation("MfgOrderCreator", fields: [createdBy], references: [id])
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @updatedAt
+
+  workOrders WorkOrder[]
+
+  @@index([status])
+  @@index([productId])
+  @@map("manufacturing_orders")
+}
+
+model WorkOrder {
+  id                   String             @id @default(cuid())
+  manufacturingOrderId String
+  manufacturingOrder   ManufacturingOrder @relation(fields: [manufacturingOrderId], references: [id], onDelete: Cascade)
+  operation            String
+  duration             Int // in minutes
+  sequence             Int
+  assignedTo           String?
+  assignee             User?              @relation("WorkOrderAssignee", fields: [assignedTo], references: [id])
+  status               WorkOrderStatus    @default(PENDING)
+  startedAt            DateTime?
+  completedAt          DateTime?
+
+  @@index([manufacturingOrderId])
+  @@map("work_orders")
+}
+
+model StockLedger {
+  id            String       @id @default(cuid())
+  productId     String
+  product       Product      @relation(fields: [productId], references: [id])
+  movementType  MovementType
+  quantity      Int
+  previousStock Int
+  newStock      Int
+  referenceType String // "SalesOrder", "PurchaseOrder", "ManufacturingOrder", "Manual"
+  referenceId   String
+  createdBy     String
+  creator       User         @relation(fields: [createdBy], references: [id])
+  createdAt     DateTime     @default(now())
+
+  @@index([productId, createdAt])
+  @@index([referenceType, referenceId])
+  @@map("stock_ledger")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  module    String
+  action    String
+  entityId  String?
+  oldValue  Json?
+  newValue  Json?
+  createdAt DateTime @default(now())
+
+  @@index([module, createdAt])
+  @@index([userId, createdAt])
+  @@map("audit_logs")
+}
