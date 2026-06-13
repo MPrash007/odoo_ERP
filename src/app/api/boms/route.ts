@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server"; // Force Turbopack rebuild
 import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/auth";
 import { bomSchema } from "@/lib/validations";
@@ -38,23 +38,38 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const data = bomSchema.parse(body);
 
-    const bom = await prisma.bom.create({
-      data: {
-        productId: data.productId,
-        name: data.name,
-        items: { create: data.items },
-        operations: {
-          create: data.operations?.map((op, i) => ({
-            ...op,
-            sequence: op.sequence || i + 1,
-          })) || [],
-        },
-      },
-      include: { product: true, items: { include: { component: true } }, operations: true },
+    const existingBom = await prisma.bom.findUnique({
+      where: { productId: data.productId },
     });
 
-    await prisma.auditLog.create({
-      data: { userId: user.id, module: "BOM", action: "CREATED", entityId: bom.id, newValue: { productId: data.productId, components: data.items.length } },
+    if (existingBom) {
+      return NextResponse.json(
+        { error: "A Bill of Materials already exists for this product. Please use the Edit button on the BoM list to modify it." },
+        { status: 400 }
+      );
+    }
+
+    const bom = await prisma.$transaction(async (tx) => {
+      const b = await tx.bom.create({
+        data: {
+          productId: data.productId,
+          name: data.name,
+          items: { create: data.items },
+          operations: {
+            create: data.operations?.map((op, i) => ({
+              ...op,
+              sequence: op.sequence || i + 1,
+            })) || [],
+          },
+        },
+        include: { product: true, items: { include: { component: true } }, operations: true },
+      });
+
+      await tx.auditLog.create({
+        data: { userId: user.id, module: "BOM", action: "CREATED", entityId: b.id, newValue: { productId: data.productId, components: data.items.length } },
+      });
+
+      return b;
     });
 
     return NextResponse.json({ data: bom }, { status: 201 });
