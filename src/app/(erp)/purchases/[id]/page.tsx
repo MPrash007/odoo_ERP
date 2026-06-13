@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import { PurchaseDetailClient } from "./purchase-detail-client";
 
 export default async function PurchaseOrderDetailPage({
@@ -25,11 +26,13 @@ export default async function PurchaseOrderDetailPage({
     notFound();
   }
 
+  const currentUser = await getCurrentUser();
+
   const formattedOrder = {
     ...order,
     orderNumber: `PO-${order.id.slice(-6).toUpperCase()}`,
     totalAmount: order.items.reduce((sum, item) => sum + Number(item.quantity) * Number(item.unitCost), 0),
   };
 
-  return <PurchaseDetailClient order={JSON.parse(JSON.stringify(formattedOrder))} />;
+  return <PurchaseDetailClient order={JSON.parse(JSON.stringify(formattedOrder))} currentUserRole={currentUser.role} />;
 }

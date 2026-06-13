@@ -3,7 +3,7 @@ import { ManufacturingOrderForm } from "@/components/forms/manufacturing-order-f
 import { PageHeader } from "@/components/layout/page-header";
 
 export default async function NewManufacturingOrderPage() {
-  const [products, boms] = await Promise.all([
+  const [products, boms, users] = await Promise.all([
     prisma.product.findMany({ 
       where: { 
         productType: { in: ["FINISHED_GOOD", "SEMI_FINISHED"] }
@@ -12,6 +12,11 @@ export default async function NewManufacturingOrderPage() {
     }),
     prisma.bom.findMany({
       where: { isActive: true },
+      orderBy: { name: "asc" }
+    }),
+    prisma.user.findMany({
+      where: { role: { in: ["MANUFACTURING", "ADMIN", "OWNER"] } },
+      select: { id: true, name: true, role: true },
       orderBy: { name: "asc" }
     })
   ]);
@@ -31,6 +36,7 @@ export default async function NewManufacturingOrderPage() {
         <ManufacturingOrderForm 
           products={JSON.parse(JSON.stringify(products))} 
           boms={JSON.parse(JSON.stringify(boms))} 
+          manufacturingUsers={JSON.parse(JSON.stringify(users))}
         />
       </div>
     </div>

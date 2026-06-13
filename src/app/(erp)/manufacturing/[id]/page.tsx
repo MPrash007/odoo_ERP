@@ -22,6 +22,7 @@ export default async function ManufacturingOrderDetailPage({
           },
         },
       },
+      workOrders: true,
     },
   });
 
@@ -29,5 +30,27 @@ export default async function ManufacturingOrderDetailPage({
     notFound();
   }
 
-  return <ManufacturingDetailClient order={JSON.parse(JSON.stringify(order))} />;
+  let startDate = null;
+  let endDate = null;
+
+  if (order.workOrders && order.workOrders.length > 0) {
+    const startedOrders = order.workOrders.filter((wo) => wo.startedAt);
+    if (startedOrders.length > 0) {
+      startDate = new Date(Math.min(...startedOrders.map((wo) => wo.startedAt!.getTime())));
+    }
+
+    const completedOrders = order.workOrders.filter((wo) => wo.completedAt);
+    if (completedOrders.length > 0 && completedOrders.length === order.workOrders.length) {
+      endDate = new Date(Math.max(...completedOrders.map((wo) => wo.completedAt!.getTime())));
+    }
+  }
+
+  const formattedOrder = {
+    ...order,
+    orderNumber: `MO-${order.id.slice(-6).toUpperCase()}`,
+    startDate,
+    endDate,
+  };
+
+  return <ManufacturingDetailClient order={JSON.parse(JSON.stringify(formattedOrder))} />;
 }

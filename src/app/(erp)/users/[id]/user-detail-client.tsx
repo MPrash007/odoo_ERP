@@ -12,6 +12,11 @@ import { User, UserRole } from "@prisma/client";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+interface Vendor {
+  id: string;
+  name: string;
+}
+
 type PermissionValue = "YES" | "NO" | "LIMITED" | "AUTO";
 
 const PRIVILEGE_MATRIX = {
@@ -91,23 +96,30 @@ const renderIcon = (val: string) => {
   return null;
 };
 
-export function UserDetailClient({ initialData }: { initialData: User }) {
+export function UserDetailClient({ initialData, vendors = [] }: { initialData: User & { vendorId?: string | null }, vendors?: Vendor[] }) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<"Sales" | "Purchase" | "Manufacturing" | "Product">("Sales");
   
   const [position, setPosition] = useState(initialData.position || "");
   const [role, setRole] = useState<UserRole>(initialData.role);
+  const [vendorId, setVendorId] = useState(initialData.vendorId || "");
   const [error, setError] = useState("");
 
   const handleSave = async () => {
     setIsSaving(true);
     setError("");
     try {
+      const payload = { 
+        position, 
+        role, 
+        vendorId: role === "VENDOR" ? (vendorId || null) : null 
+      };
+      
       const res = await fetch(`/api/users/${initialData.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ position, role }),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) {
         const data = await res.json();
@@ -205,8 +217,26 @@ export function UserDetailClient({ initialData }: { initialData: User }) {
                 <option value="PURCHASE">PURCHASE</option>
                 <option value="MANUFACTURING">MANUFACTURING</option>
                 <option value="INVENTORY">INVENTORY</option>
+                <option value="VENDOR">VENDOR</option>
               </select>
             </div>
+            
+            {role === "VENDOR" && (
+              <div>
+                <label className="text-xs text-[#8C8C8C] mb-1.5 block font-medium">Assigned Vendor Company</label>
+                <select 
+                  value={vendorId} 
+                  onChange={(e) => setVendorId(e.target.value)}
+                  className="flex h-9 w-full rounded-md border border-[#E0E0E0] bg-white px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#820AD1]"
+                >
+                  <option value="">Select a vendor...</option>
+                  {vendors.map(v => (
+                    <option key={v.id} value={v.id}>{v.name}</option>
+                  ))}
+                </select>
+                <p className="text-[10px] text-[#8C8C8C] mt-1">This user will only see Purchase Orders assigned to this vendor.</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

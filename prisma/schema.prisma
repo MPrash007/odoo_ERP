@@ -17,6 +17,7 @@ enum UserRole {
   MANUFACTURING
   INVENTORY
   OWNER
+  VENDOR
 }
 
 enum UserStatus {
@@ -94,6 +95,8 @@ model User {
   role         UserRole   @default(NONE)
   profileImage String?
   status       UserStatus @default(ACTIVE)
+  vendorId     String?
+  vendor       Vendor?    @relation(fields: [vendorId], references: [id])
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
@@ -170,6 +173,7 @@ model Vendor {
 
   products       Product[]
   purchaseOrders PurchaseOrder[]
+  users          User[]
 
   @@map("vendors")
 }

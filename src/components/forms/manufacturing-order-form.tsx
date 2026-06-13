@@ -16,9 +16,11 @@ type ManufacturingOrderFormValues = z.infer<typeof manufacturingOrderSchema>;
 export function ManufacturingOrderForm({
   products,
   boms,
+  manufacturingUsers,
 }: {
   products: Array<{ id: string; name: string }>;
   boms: Array<{ id: string; name: string; productId: string }>;
+  manufacturingUsers: Array<{ id: string; name: string; role: string }>;
 }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -30,6 +32,7 @@ export function ManufacturingOrderForm({
       productId: "",
       bomId: "",
       quantity: 1,
+      assignedTo: null,
     },
   });
 
@@ -127,6 +130,22 @@ export function ManufacturingOrderForm({
           />
           {form.formState.errors.quantity && (
             <p className="text-xs text-[#E53935]">{form.formState.errors.quantity.message}</p>
+          )}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="assignedTo">Assign To (Optional)</Label>
+          <select
+            id="assignedTo"
+            {...form.register("assignedTo")}
+            className="flex h-10 w-full rounded-md border border-[#E0E0E0] bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#820AD1] focus-visible:border-transparent transition-all"
+          >
+            <option value="">Unassigned</option>
+            {manufacturingUsers.map((u) => (
+              <option key={u.id} value={u.id}>{u.name} ({u.role.toLowerCase()})</option>
+            ))}
+          </select>
+          {form.formState.errors.assignedTo && (
+            <p className="text-xs text-[#E53935]">{form.formState.errors.assignedTo.message}</p>
           )}
         </div>
       </div>

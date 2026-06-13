@@ -37,7 +37,7 @@ interface Order {
   items: OrderItem[];
 }
 
-export function PurchaseDetailClient({ order }: { order: Order }) {
+export function PurchaseDetailClient({ order, currentUserRole }: { order: Order, currentUserRole?: string }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -93,10 +93,10 @@ export function PurchaseDetailClient({ order }: { order: Order }) {
                 className="bg-[#820AD1] hover:bg-[#9013D8]"
               >
                 {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
-                Confirm Order
+                {currentUserRole === "VENDOR" ? "Acknowledge Order" : "Confirm Order"}
               </Button>
             )}
-            {order.status === "CONFIRMED" && (
+            {order.status === "CONFIRMED" && currentUserRole !== "VENDOR" && (
               <Button
                 onClick={() => handleAction("receive")}
                 disabled={isLoading}

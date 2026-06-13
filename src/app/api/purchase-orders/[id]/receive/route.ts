@@ -8,6 +8,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const user = await requirePermission("purchase-orders", "manage");
     const { id } = await params;
 
+    if (user.role === "VENDOR") {
+      throw new Error("Vendors cannot receive orders into inventory");
+    }
+
     await prisma.$transaction(async (tx) => {
       const order = await tx.purchaseOrder.findUniqueOrThrow({
         where: { id },

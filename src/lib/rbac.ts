@@ -75,6 +75,11 @@ const ROLE_PERMISSIONS: Record<string, Permission[]> = {
     "dashboard:*",
     "ai:*",
   ],
+
+  VENDOR: [
+    "purchase-orders:read",
+    "purchase-orders:update",
+  ],
 };
 
 // ─── Permission Check ───────────────────────────────

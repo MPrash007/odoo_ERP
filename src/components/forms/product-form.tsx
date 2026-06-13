@@ -159,17 +159,15 @@ export function ProductForm({
           />
         </div>
 
-        {productType === "FINISHED_GOOD" && (
-          <div className="space-y-2">
-            <Label htmlFor="salesPrice">Sales Price</Label>
-            <Input
-              id="salesPrice"
-              type="number"
-              step="0.01"
-              {...form.register("salesPrice", { valueAsNumber: true })}
-            />
-          </div>
-        )}
+        <div className="space-y-2">
+          <Label htmlFor="salesPrice">Sales Price</Label>
+          <Input
+            id="salesPrice"
+            type="number"
+            step="0.01"
+            {...form.register("salesPrice", { valueAsNumber: true })}
+          />
+        </div>
       </div>
 
       <div className="flex justify-end gap-4 pt-4 border-t border-[#F5F2F8]">

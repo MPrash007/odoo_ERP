@@ -5,7 +5,7 @@ import { purchaseOrderSchema } from "@/lib/validations";
 
 export async function GET(req: NextRequest) {
   try {
-    await requirePermission("purchase-orders", "read");
+    const user = await requirePermission("purchase-orders", "read");
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status") || "";
     const page = parseInt(searchParams.get("page") || "1");
@@ -13,6 +13,14 @@ export async function GET(req: NextRequest) {
 
     const where: Record<string, unknown> = {};
     if (status) where.status = status;
+    
+    // Vendor Role Security Filter
+    if (user.role === "VENDOR") {
+      if (!user.vendorId) {
+        return NextResponse.json({ data: [], pagination: { page, limit, total: 0, totalPages: 0 } });
+      }
+      where.vendorId = user.vendorId;
+    }
 
     const [orders, total] = await Promise.all([
       prisma.purchaseOrder.findMany({

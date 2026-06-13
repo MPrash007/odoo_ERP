@@ -54,13 +54,14 @@ export async function PATCH(
 
     const { id } = await params;
     const body = await request.json();
-    const { position, role } = body;
+    const { position, role, vendorId } = body;
 
     const updatedUser = await prisma.user.update({
       where: { id },
       data: {
         position,
         role: role as UserRole,
+        vendorId: vendorId || null,
       },
     });
 

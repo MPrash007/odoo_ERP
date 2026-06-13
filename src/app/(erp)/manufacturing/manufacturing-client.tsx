@@ -9,6 +9,8 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn, formatDateTime } from "@/lib/utils";
 
+import { UserCircle } from "lucide-react";
+
 interface ManufacturingOrder {
   id: string;
   orderNumber: string;
@@ -16,21 +18,25 @@ interface ManufacturingOrder {
   bom: { name: string } | null;
   status: string;
   quantity: number;
+  assignedTo: string | null;
+  assignee: { name: string; profileImage: string | null } | null;
   createdAt: string;
   startDate: string | null;
   endDate: string | null;
 }
 
-export function ManufacturingClient({ initialData }: { initialData: ManufacturingOrder[] }) {
+export function ManufacturingClient({ initialData, currentUserId }: { initialData: ManufacturingOrder[], currentUserId: string }) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [showMyAssignments, setShowMyAssignments] = useState(false);
 
   const filteredData = initialData.filter((order) => {
     const matchesSearch =
       order.orderNumber.toLowerCase().includes(search.toLowerCase()) ||
       order.product.name.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === "ALL" || order.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesAssignment = !showMyAssignments || order.assignedTo === currentUserId;
+    return matchesSearch && matchesStatus && matchesAssignment;
   });
 
   return (
@@ -55,7 +61,18 @@ export function ManufacturingClient({ initialData }: { initialData: Manufacturin
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <div className="flex items-center gap-2">
+
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0">
+          <Button
+            variant={showMyAssignments ? "default" : "outline"}
+            size="sm"
+            onClick={() => setShowMyAssignments(!showMyAssignments)}
+            className={cn("whitespace-nowrap shrink-0", showMyAssignments ? "bg-[#820AD1] hover:bg-[#9013D8]" : "text-[#820AD1] border-[#820AD1] hover:bg-[#820AD1]/10")}
+          >
+            <UserCircle className="w-4 h-4 mr-2" />
+            Assigned to Me
+          </Button>
+          <div className="w-px h-6 bg-[#E0E0E0] mx-1 shrink-0" />
           {["ALL", "DRAFT", "CONFIRMED", "IN_PROGRESS", "COMPLETED", "CANCELLED"].map((status) => (
             <Button
               key={status}
@@ -78,6 +95,7 @@ export function ManufacturingClient({ initialData }: { initialData: Manufacturin
                 <th className="px-4 py-3">MO Number</th>
                 <th className="px-4 py-3">Date</th>
                 <th className="px-4 py-3">Product</th>
+                <th className="px-4 py-3">Assignee</th>
                 <th className="px-4 py-3">BoM</th>
                 <th className="px-4 py-3 text-right">Quantity</th>
                 <th className="px-4 py-3">Status</th>
@@ -100,6 +118,18 @@ export function ManufacturingClient({ initialData }: { initialData: Manufacturin
                     <td className="px-4 py-3">
                       <div className="font-medium">{order.product.name}</div>
                       <div className="text-xs text-[#8C8C8C]">{order.product.sku}</div>
+                    </td>
+                    <td className="px-4 py-3">
+                      {order.assignee ? (
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-[#820AD1]/10 flex items-center justify-center text-[#820AD1] font-medium text-xs shrink-0">
+                            {order.assignee.name.charAt(0)}
+                          </div>
+                          <span className="text-sm font-medium">{order.assignee.name}</span>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-[#8C8C8C] italic">Unassigned</span>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-[#595959]">
                       {order.bom?.name || "N/A"}

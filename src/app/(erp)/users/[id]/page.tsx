@@ -7,13 +7,19 @@ export const dynamic = "force-dynamic";
 export default async function UserDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   
-  const user = await prisma.user.findUnique({
-    where: { id },
-  });
+  const [user, vendors] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id },
+    }),
+    prisma.vendor.findMany({
+      orderBy: { name: "asc" },
+      select: { id: true, name: true },
+    })
+  ]);
 
   if (!user) {
     notFound();
   }
 
-  return <UserDetailClient initialData={user} />;
+  return <UserDetailClient initialData={user} vendors={vendors} />;
 }
