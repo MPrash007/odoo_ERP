@@ -5,9 +5,9 @@ import Link from "next/link";
 import { Plus, Search, Filter, MoreHorizontal } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,12 +46,10 @@ export function ProductsClient({ initialData }: { initialData: Product[] }) {
         title="Products"
         description="Manage catalog, raw materials, and finished goods."
         actions={
-          <Button asChild className="bg-[#820AD1] hover:bg-[#9013D8]">
-            <Link href="/products/new">
-              <Plus className="w-4 h-4 mr-2" />
-              New Product
-            </Link>
-          </Button>
+          <Link href="/products/new" className={cn(buttonVariants(), "bg-[#820AD1] hover:bg-[#9013D8]")}>
+            <Plus className="w-4 h-4 mr-2" />
+            Add Product
+          </Link>
         }
       />
 
@@ -162,21 +160,15 @@ export function ProductsClient({ initialData }: { initialData: Product[] }) {
                     </td>
                     <td className="px-4 py-3 text-center">
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
+                        <DropdownMenuTrigger render={<Button variant="ghost" className="h-8 w-8 p-0" />}>
+                          <MoreHorizontal className="h-4 w-4" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem asChild>
-                            <Link href={`/products/${product.id}`}>
-                              View Details
-                            </Link>
+                          <DropdownMenuItem render={<Link href={`/products/${product.id}`} />}>
+                            View Details
                           </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                            <Link href={`/products/${product.id}/edit`}>
-                              Edit Product
-                            </Link>
+                          <DropdownMenuItem render={<Link href={`/products/${product.id}/edit`} />}>
+                            Edit Product
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

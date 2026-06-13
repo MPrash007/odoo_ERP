@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useSidebarStore, useAIAssistantStore } from "@/stores";
 import {
@@ -45,8 +45,8 @@ const NAV_SECTIONS = [
   {
     label: "Operations",
     items: [
-      { title: "Sales Orders", href: "/sales-orders", icon: ShoppingCart },
-      { title: "Purchase Orders", href: "/purchase-orders", icon: ClipboardList },
+      { title: "Sales Orders", href: "/sales", icon: ShoppingCart },
+      { title: "Purchase Orders", href: "/purchases", icon: ClipboardList },
     ],
   },
   {
@@ -66,7 +66,7 @@ const NAV_SECTIONS = [
   {
     label: "System",
     items: [
-      { title: "Audit Logs", href: "/audit-logs", icon: ScrollText },
+      { title: "Audit Logs", href: "/audit", icon: ScrollText },
       { title: "Settings", href: "/settings", icon: Settings },
     ],
   },
@@ -74,6 +74,7 @@ const NAV_SECTIONS = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { isCollapsed, setCollapsed } = useSidebarStore();
   const { setOpen: setAIOpen } = useAIAssistantStore();
 
@@ -122,33 +123,29 @@ export function Sidebar() {
                     pathname.startsWith(item.href));
                 const Icon = item.icon;
 
-                const navLink = (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
-                      isActive
-                        ? "bg-white/20 text-white shadow-sm"
-                        : "text-white/70 hover:bg-white/10 hover:text-white",
-                      isCollapsed && "justify-center px-2"
-                    )}
-                  >
-                    <Icon
-                      className={cn(
-                        "shrink-0 transition-colors",
-                        isActive ? "text-white" : "text-white/70",
-                        isCollapsed ? "w-5 h-5" : "w-4 h-4"
-                      )}
-                    />
-                    {!isCollapsed && <span className="truncate">{item.title}</span>}
-                  </Link>
+                const linkClasses = cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                  isActive
+                    ? "bg-white/20 text-white shadow-sm"
+                    : "text-white/70 hover:bg-white/10 hover:text-white",
+                  isCollapsed && "justify-center px-2 cursor-pointer w-full"
+                );
+
+                const iconClasses = cn(
+                  "shrink-0 transition-colors",
+                  isActive ? "text-white" : "text-white/70",
+                  isCollapsed ? "w-5 h-5" : "w-4 h-4"
                 );
 
                 if (isCollapsed) {
                   return (
                     <Tooltip key={item.href} delayDuration={0}>
-                      <TooltipTrigger asChild>{navLink}</TooltipTrigger>
+                      <TooltipTrigger 
+                        className={linkClasses}
+                        onClick={() => router.push(item.href)}
+                      >
+                        <Icon className={iconClasses} />
+                      </TooltipTrigger>
                       <TooltipContent side="right" sideOffset={12}>
                         {item.title}
                       </TooltipContent>
@@ -156,7 +153,16 @@ export function Sidebar() {
                   );
                 }
 
-                return navLink;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={linkClasses}
+                  >
+                    <Icon className={iconClasses} />
+                    <span className="truncate">{item.title}</span>
+                  </Link>
+                );
               })}
             </div>
           </div>
