@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { LOW_STOCK_THRESHOLD } from "@/lib/constants";
 import { DashboardClient } from "./dashboard-client";
+import { requirePermission } from "@/lib/auth";
 
 async function getDashboardData() {
   const [
@@ -89,6 +90,7 @@ async function getDashboardData() {
 }
 
 export default async function DashboardPage() {
+  await requirePermission("dashboard", "read");
   const data = await getDashboardData();
   return <DashboardClient data={data} />;
 }
