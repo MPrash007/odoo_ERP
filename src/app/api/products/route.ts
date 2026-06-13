@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
         module: "PRODUCT",
         action: "CREATED",
         entityId: product.id,
-        newValue: data as unknown as Record<string, unknown>,
+        newValue: data as any,
       },
     });
 

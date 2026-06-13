@@ -218,7 +218,7 @@ export function DashboardClient({ data }: { data: DashboardData }) {
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(value: number, name: string) => [value, STATUS_LABELS[name] || name]}
+                    formatter={(value: any, name: any) => [value, STATUS_LABELS[name as string] || name]}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -257,7 +257,7 @@ export function DashboardClient({ data }: { data: DashboardData }) {
                   />
                   <YAxis tick={{ fontSize: 10 }} />
                   <Tooltip
-                    formatter={(value: number, name: string) => [value, "Orders"]}
+                    formatter={(value: any, name: any) => [value, "Orders"]}
                     labelFormatter={(label) => STATUS_LABELS[label] || label}
                   />
                   <Bar dataKey="count" fill="#820AD1" radius={[4, 4, 0, 0]} />

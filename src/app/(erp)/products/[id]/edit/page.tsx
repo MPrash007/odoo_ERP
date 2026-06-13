@@ -42,7 +42,7 @@ export default async function EditProductPage({
             procurementType: product.procurementType as "MANUFACTURING" | "PURCHASE",
             procurementStrategy: product.procurementStrategy as "MTS" | "MTO",
             costPrice: Number(product.costPrice),
-            salesPrice: product.salesPrice ? Number(product.salesPrice) : null,
+            salesPrice: product.salesPrice ? Number(product.salesPrice) : 0,
             vendorId: product.vendorId,
           }}
         />

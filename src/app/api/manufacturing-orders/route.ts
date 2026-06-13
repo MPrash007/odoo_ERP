@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     });
 
     await prisma.auditLog.create({
-      data: { userId: user.id, module: "MANUFACTURING", action: "ORDER_CREATED", entityId: order.id, newValue: data as unknown as Record<string, unknown> },
+      data: { userId: user.id, module: "MANUFACTURING", action: "ORDER_CREATED", entityId: order.id, newValue: data as any },
     });
 
     return NextResponse.json({ data: order }, { status: 201 });

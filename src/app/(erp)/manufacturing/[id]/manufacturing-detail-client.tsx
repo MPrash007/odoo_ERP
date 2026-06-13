@@ -4,7 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/layout/page-header";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatDateTime } from "@/lib/utils";
@@ -80,12 +81,10 @@ export function ManufacturingDetailClient({ order }: { order: Order }) {
         ]}
         actions={
           <div className="flex gap-2">
-            <Button variant="outline" asChild>
-              <Link href="/manufacturing">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
-              </Link>
-            </Button>
+            <Link href="/manufacturing" className={cn(buttonVariants({ variant: "outline" }))}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Link>
             {order.status === "DRAFT" && (
               <Button
                 onClick={() => handleAction("confirm")}

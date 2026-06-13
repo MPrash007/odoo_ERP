@@ -24,7 +24,7 @@ export function CustomerForm({
   const [error, setError] = useState("");
 
   const form = useForm<CustomerFormValues>({
-    resolver: zodResolver(customerSchema),
+    resolver: zodResolver(customerSchema) as any,
     defaultValues: initialData || {
       name: "",
       email: "",

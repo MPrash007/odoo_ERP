@@ -5,7 +5,8 @@ import Link from "next/link";
 import { Plus, Search, MoreHorizontal, Eye } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
 import {
@@ -43,12 +44,10 @@ export function PurchasesClient({ initialData }: { initialData: PurchaseOrder[] 
         title="Purchase Orders"
         description="Manage supplier orders and receive raw materials."
         actions={
-          <Button asChild className="bg-[#820AD1] hover:bg-[#9013D8]">
-            <Link href="/purchases/new">
+          <Link href="/purchases/new" className={cn(buttonVariants(), "bg-[#820AD1] hover:bg-[#9013D8]")}>
               <Plus className="w-4 h-4 mr-2" />
               New Purchase Order
             </Link>
-          </Button>
         }
       />
 
@@ -134,18 +133,16 @@ export function PurchasesClient({ initialData }: { initialData: PurchaseOrder[] 
                       </td>
                       <td className="px-4 py-3 text-center">
                         <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <MoreHorizontal className="h-4 w-4 text-[#8C8C8C]" />
-                            </Button>
-                          </DropdownMenuTrigger>
+                          <DropdownMenuTrigger render={<Button variant="ghost" className="h-8 w-8 p-0"  />}>
+  <MoreHorizontal className="h-4 w-4 text-[#8C8C8C]" />
+</DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem asChild>
-                              <Link href={`/purchases/${order.id}`}>
+                            <DropdownMenuItem render={<Link href={`/purchases/${order.id}`} />}>
+  
                                 <Eye className="w-4 h-4 mr-2" />
                                 View Details
-                              </Link>
-                            </DropdownMenuItem>
+                              
+</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </td>

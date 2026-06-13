@@ -1,13 +1,13 @@
-"use client";
+"use client";
 
 import { useState } from "react";
 import Link from "next/link";
 import { Search, Eye } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { formatDateTime } from "@/lib/utils";
+import { cn, formatDateTime } from "@/lib/utils";
 
 interface ManufacturingOrder {
   id: string;
@@ -121,12 +121,10 @@ export function ManufacturingClient({ initialData }: { initialData: Manufacturin
                       </Badge>
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <Button variant="ghost" size="sm" asChild className="text-[#820AD1]">
-                        <Link href={`/manufacturing/${order.id}`}>
-                          <Eye className="w-4 h-4 mr-1.5" />
+                      <Link href={`/manufacturing/${order.id}`} className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "text-[#820AD1]")}>
+  <Eye className="w-4 h-4 mr-1.5" />
                           View
-                        </Link>
-                      </Button>
+</Link>
                     </td>
                   </tr>
                 ))

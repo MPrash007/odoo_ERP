@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const data = vendorSchema.parse(body);
     const vendor = await prisma.vendor.create({ data });
-    await prisma.auditLog.create({ data: { userId: user.id, module: "VENDOR", action: "CREATED", entityId: vendor.id, newValue: data as unknown as Record<string, unknown> } });
+    await prisma.auditLog.create({ data: { userId: user.id, module: "VENDOR", action: "CREATED", entityId: vendor.id, newValue: data as any } });
     return NextResponse.json({ data: vendor }, { status: 201 });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Internal server error";

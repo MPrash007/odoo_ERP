@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     const customer = await prisma.customer.create({ data });
 
     await prisma.auditLog.create({
-      data: { userId: user.id, module: "CUSTOMER", action: "CREATED", entityId: customer.id, newValue: data as unknown as Record<string, unknown> },
+      data: { userId: user.id, module: "CUSTOMER", action: "CREATED", entityId: customer.id, newValue: data as any },
     });
 
     return NextResponse.json({ data: customer }, { status: 201 });

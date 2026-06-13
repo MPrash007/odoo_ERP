@@ -61,8 +61,8 @@ export async function PATCH(
         module: "PRODUCT",
         action: "UPDATED",
         entityId: id,
-        oldValue: existing as unknown as Record<string, unknown>,
-        newValue: data as unknown as Record<string, unknown>,
+        oldValue: existing as any,
+        newValue: data as any,
       },
     });
 
@@ -91,7 +91,7 @@ export async function DELETE(
         module: "PRODUCT",
         action: "DELETED",
         entityId: id,
-        oldValue: product as unknown as Record<string, unknown>,
+        oldValue: product as any,
       },
     });
 

@@ -24,7 +24,7 @@ export function VendorForm({
   const [error, setError] = useState("");
 
   const form = useForm<VendorFormValues>({
-    resolver: zodResolver(vendorSchema),
+    resolver: zodResolver(vendorSchema) as any,
     defaultValues: initialData || {
       name: "",
       email: "",

@@ -106,7 +106,7 @@ export function Header({ userRole }: HeaderProps) {
 
         {/* User Button */}
         <UserButton
-          afterSignOutUrl="/sign-in"
+
           appearance={{
             elements: {
               avatarBox: "w-9 h-9 rounded-lg",

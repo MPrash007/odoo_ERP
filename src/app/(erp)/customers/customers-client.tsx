@@ -5,7 +5,8 @@ import Link from "next/link";
 import { Plus, Search, MoreHorizontal, Mail, Phone, MapPin } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,12 +41,10 @@ export function CustomersClient({ initialData }: { initialData: Customer[] }) {
         title="Customers"
         description="Manage your client base and view their order history."
         actions={
-          <Button asChild className="bg-[#820AD1] hover:bg-[#9013D8]">
-            <Link href="/customers/new">
-              <Plus className="w-4 h-4 mr-2" />
-              New Customer
-            </Link>
-          </Button>
+          <Link href="/customers/new" className={cn(buttonVariants(), "bg-[#820AD1] hover:bg-[#9013D8]")}>
+            <Plus className="w-4 h-4 mr-2" />
+            New Customer
+          </Link>
         }
       />
 
@@ -113,16 +112,12 @@ export function CustomersClient({ initialData }: { initialData: Customer[] }) {
                     </td>
                     <td className="px-4 py-3 text-center">
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4 text-[#8C8C8C]" />
-                          </Button>
+                        <DropdownMenuTrigger render={<Button variant="ghost" className="h-8 w-8 p-0" />}>
+                          <MoreHorizontal className="h-4 w-4" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem asChild>
-                            <Link href={`/customers/${customer.id}/edit`}>
-                              Edit Details
-                            </Link>
+                          <DropdownMenuItem render={<Link href={`/customers/${customer.id}`} />}>
+                            View Details
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

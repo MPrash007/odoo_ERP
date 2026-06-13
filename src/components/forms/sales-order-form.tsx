@@ -26,7 +26,7 @@ export function SalesOrderForm({
   const [error, setError] = useState("");
 
   const form = useForm<SalesOrderFormValues>({
-    resolver: zodResolver(salesOrderSchema),
+    resolver: zodResolver(salesOrderSchema) as any,
     defaultValues: {
       customerId: "",
       items: [{ productId: "", quantity: 1, unitPrice: 0 }],

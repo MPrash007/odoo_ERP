@@ -25,7 +25,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const body = await req.json();
     const data = customerSchema.partial().parse(body);
     const customer = await prisma.customer.update({ where: { id }, data });
-    await prisma.auditLog.create({ data: { userId: user.id, module: "CUSTOMER", action: "UPDATED", entityId: id, newValue: data as unknown as Record<string, unknown> } });
+    await prisma.auditLog.create({ data: { userId: user.id, module: "CUSTOMER", action: "UPDATED", entityId: id, newValue: data as any } });
     return NextResponse.json({ data: customer });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Update failed";
