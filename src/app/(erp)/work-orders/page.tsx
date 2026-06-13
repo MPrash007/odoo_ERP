@@ -13,7 +13,7 @@ export default async function WorkOrdersPage() {
       },
     },
     orderBy: {
-      createdAt: "desc"
+      id: "desc"
     }
   });
 
@@ -41,10 +41,10 @@ export default async function WorkOrdersPage() {
                 workOrders.map((wo) => (
                   <tr key={wo.id} className="hover:bg-[#F5F2F8]/30 transition-colors">
                     <td className="px-4 py-4 font-medium text-[#1A1A1A]">
-                      {wo.operationName}
+                      {wo.operation}
                     </td>
                     <td className="px-4 py-4 text-[#595959]">
-                      {wo.manufacturingOrder.orderNumber}
+                      MO-{wo.manufacturingOrder.id.slice(-6).toUpperCase()}
                     </td>
                     <td className="px-4 py-4">
                       {wo.manufacturingOrder.product.name}
@@ -67,7 +67,7 @@ export default async function WorkOrdersPage() {
                       {wo.duration ?? "-"}
                     </td>
                     <td className="px-4 py-4 text-[#595959]">
-                      {wo.startDate ? formatDateTime(wo.startDate) : "-"}
+                      {wo.startedAt ? formatDateTime(wo.startedAt) : "-"}
                     </td>
                   </tr>
                 ))

@@ -66,7 +66,7 @@ const NAV_SECTIONS = [
   {
     label: "System",
     items: [
-      { title: "Audit Logs", href: "/audit", icon: ScrollText },
+      { title: "Audit Logs", href: "/audit-logs", icon: ScrollText },
       { title: "Settings", href: "/settings", icon: Settings },
     ],
   },
