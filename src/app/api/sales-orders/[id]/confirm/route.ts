@@ -11,8 +11,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     return NextResponse.json({
       success: true,
-      message: "Sales order confirmed. Procurement triggered.",
-      procurement: results,
+      message: results.message,
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Confirmation failed";

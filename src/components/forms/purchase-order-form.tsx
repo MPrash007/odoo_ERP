@@ -125,7 +125,7 @@ export function PurchaseOrderForm({
           <table className="w-full text-sm text-left">
             <thead className="bg-[#F5F2F8]">
               <tr>
-                <th className="px-4 py-2 w-[45%]">Raw Material</th>
+                <th className="px-4 py-2 w-[45%]">Product</th>
                 <th className="px-4 py-2 w-[20%]">Quantity</th>
                 <th className="px-4 py-2 w-[20%]">Unit Price</th>
                 <th className="px-4 py-2 text-right">Subtotal</th>
@@ -149,7 +149,7 @@ export function PurchaseOrderForm({
                         }}
                         className="flex h-9 w-full rounded-md border border-[#E0E0E0] bg-white px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#820AD1]"
                       >
-                        <option value="">Select material...</option>
+                        <option value="">Select product...</option>
                         {products.map((p) => (
                           <option key={p.id} value={p.id}>{p.name}</option>
                         ))}

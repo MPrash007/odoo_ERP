@@ -2,6 +2,7 @@ import { auth, currentUser as getClerkUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { hasPermission, type Module, type Action } from "@/lib/rbac";
 import type { User } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import { redirect } from "next/navigation";
 
 export async function getCurrentUser(): Promise<User> {
@@ -30,7 +31,7 @@ export async function getCurrentUser(): Promise<User> {
         email,
         name,
         profileImage: clerkUser.imageUrl,
-        role: "NONE", // Default to NONE for local dev testing until admin approves
+        role: "NONE" as any, // Default to NONE for local dev testing until admin approves
         status: "ACTIVE",
       },
     });

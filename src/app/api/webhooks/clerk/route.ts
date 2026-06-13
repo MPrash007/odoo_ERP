@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { UserRole } from "@prisma/client";
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
@@ -57,7 +58,7 @@ export async function POST(req: Request) {
         email: email || `${id}@placeholder.com`,
         name,
         profileImage: image_url,
-        role: "NONE", // Default role
+        role: "NONE" as any, // Default role
         status: "ACTIVE",
       },
     });

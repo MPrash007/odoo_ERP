@@ -25,5 +25,11 @@ export default async function SalesOrderDetailPage({
     notFound();
   }
 
-  return <SalesDetailClient order={JSON.parse(JSON.stringify(order))} />;
+  const formattedOrder = {
+    ...order,
+    orderNumber: `SO-${order.id.slice(-6).toUpperCase()}`,
+    totalAmount: order.items.reduce((sum, item) => sum + Number(item.quantity) * Number(item.unitPrice), 0),
+  };
+
+  return <SalesDetailClient order={JSON.parse(JSON.stringify(formattedOrder))} />;
 }

@@ -6,9 +6,15 @@ export default async function SalesOrdersPage() {
     orderBy: { createdAt: "desc" },
     include: {
       customer: { select: { name: true } },
-      items: { select: { quantity: true } },
+      items: { select: { quantity: true, unitPrice: true } },
     },
   });
 
-  return <SalesClient initialData={JSON.parse(JSON.stringify(salesOrders))} />;
+  const formattedOrders = salesOrders.map((so) => ({
+    ...so,
+    orderNumber: `SO-${so.id.slice(-6).toUpperCase()}`,
+    totalAmount: so.items.reduce((sum, item) => sum + Number(item.quantity) * Number(item.unitPrice), 0),
+  }));
+
+  return <SalesClient initialData={JSON.parse(JSON.stringify(formattedOrders))} />;
 }

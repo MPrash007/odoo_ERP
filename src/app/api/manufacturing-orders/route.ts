@@ -46,16 +46,27 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const data = manufacturingOrderSchema.parse(body);
 
-    const order = await prisma.manufacturingOrder.create({
-      data: {
-        ...data,
-        createdBy: user.id,
-      },
-      include: { product: true, bom: true },
-    });
+    const order = await prisma.$transaction(async (tx) => {
+      // Validate BoM belongs to Product
+      const bom = await tx.bom.findUnique({ where: { id: data.bomId } });
+      if (!bom) throw new Error("BoM not found");
+      if (bom.productId !== data.productId) {
+        throw new Error("Selected BoM does not belong to the selected product");
+      }
 
-    await prisma.auditLog.create({
-      data: { userId: user.id, module: "MANUFACTURING", action: "ORDER_CREATED", entityId: order.id, newValue: data as any },
+      const o = await tx.manufacturingOrder.create({
+        data: {
+          ...data,
+          createdBy: user.id,
+        },
+        include: { product: true, bom: true },
+      });
+
+      await tx.auditLog.create({
+        data: { userId: user.id, module: "MANUFACTURING", action: "ORDER_CREATED", entityId: o.id, newValue: data as any },
+      });
+
+      return o;
     });
 
     return NextResponse.json({ data: order }, { status: 201 });

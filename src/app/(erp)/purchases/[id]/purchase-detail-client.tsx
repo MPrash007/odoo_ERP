@@ -14,7 +14,7 @@ import { ArrowLeft, CheckCircle, Package, Truck, FileText, Loader2, Factory } fr
 interface OrderItem {
   id: string;
   quantity: number;
-  unitPrice: number;
+  unitCost: number;
   product: {
     name: string;
     sku: string;
@@ -248,10 +248,10 @@ export function PurchaseDetailClient({ order }: { order: Order }) {
                           {item.quantity}
                         </td>
                         <td className="px-6 py-4 text-right text-[#595959]">
-                          {formatCurrency(item.unitPrice)}
+                          {formatCurrency(item.unitCost)}
                         </td>
                         <td className="px-6 py-4 text-right font-medium text-[#1A1A1A]">
-                          {formatCurrency(item.quantity * item.unitPrice)}
+                          {formatCurrency(item.quantity * item.unitCost)}
                         </td>
                       </tr>
                     ))}

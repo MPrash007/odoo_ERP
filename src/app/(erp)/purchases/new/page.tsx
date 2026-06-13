@@ -6,7 +6,6 @@ export default async function NewPurchaseOrderPage() {
   const [vendors, products] = await Promise.all([
     prisma.vendor.findMany({ orderBy: { name: "asc" } }),
     prisma.product.findMany({ 
-      where: { productType: "RAW_MATERIAL" },
       orderBy: { name: "asc" } 
     }),
   ]);
@@ -15,7 +14,7 @@ export default async function NewPurchaseOrderPage() {
     <div className="erp-page max-w-4xl">
       <PageHeader
         title="New Purchase Order"
-        description="Create a new supplier order for raw materials."
+        description="Create a new supplier order for products or raw materials."
         breadcrumbs={[
           { label: "Purchase Orders", href: "/purchases" },
           { label: "New Order" },

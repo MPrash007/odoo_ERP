@@ -56,27 +56,34 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const data = productSchema.parse(body);
 
-    const product = await prisma.product.create({
-      data: {
-        ...data,
-        createdBy: user.id,
-      },
-      include: { vendor: true },
-    });
+    const product = await prisma.$transaction(async (tx) => {
+      const p = await tx.product.create({
+        data: {
+          ...data,
+          createdBy: user.id,
+        },
+        include: { vendor: true },
+      });
 
-    // Audit log
-    await prisma.auditLog.create({
-      data: {
-        userId: user.id,
-        module: "PRODUCT",
-        action: "CREATED",
-        entityId: product.id,
-        newValue: data as any,
-      },
+      // Audit log
+      await tx.auditLog.create({
+        data: {
+          userId: user.id,
+          module: "PRODUCT",
+          action: "CREATED",
+          entityId: p.id,
+          newValue: data as any,
+        },
+      });
+
+      return p;
     });
 
     return NextResponse.json({ data: product }, { status: 201 });
-  } catch (error: unknown) {
+  } catch (error: any) {
+    if (error.code === 'P2002') {
+      return NextResponse.json({ error: "A product with this SKU already exists." }, { status: 400 });
+    }
     const message = error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json({ error: message }, { status: 400 });
   }

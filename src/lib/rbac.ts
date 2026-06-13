@@ -24,7 +24,7 @@ export type Permission = `${Module}:${Action}` | `${Module}:*` | "*";
 
 // ─── Role → Permissions Map ────────────────────────
 
-const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
+const ROLE_PERMISSIONS: Record<string, Permission[]> = {
   NONE: [],
   ADMIN: ["*"],
 

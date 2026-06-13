@@ -10,5 +10,10 @@ export default async function ManufacturingOrdersPage() {
     },
   });
 
-  return <ManufacturingClient initialData={JSON.parse(JSON.stringify(manufacturingOrders))} />;
+  const formattedOrders = manufacturingOrders.map((mo) => ({
+    ...mo,
+    orderNumber: `MO-${mo.id.slice(-6).toUpperCase()}`,
+  }));
+
+  return <ManufacturingClient initialData={JSON.parse(JSON.stringify(formattedOrders))} />;
 }

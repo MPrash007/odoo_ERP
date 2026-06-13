@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
-import { ArrowLeft, CheckCircle, Package, Truck, User, FileText, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle, Package, Truck, User, FileText, Loader2, XCircle } from "lucide-react";
 
 interface OrderItem {
   id: string;
@@ -42,7 +42,7 @@ export function SalesDetailClient({ order }: { order: Order }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleAction = async (action: "confirm" | "deliver") => {
+  const handleAction = async (action: "confirm" | "deliver" | "cancel") => {
     setIsLoading(true);
     setError("");
 
@@ -91,6 +91,16 @@ export function SalesDetailClient({ order }: { order: Order }) {
               >
                 {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
                 Confirm Order
+              </Button>
+            )}
+            {(order.status === "DRAFT" || order.status === "CONFIRMED") && (
+              <Button
+                onClick={() => handleAction("cancel")}
+                disabled={isLoading}
+                variant="destructive"
+              >
+                {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <XCircle className="w-4 h-4 mr-2" />}
+                Cancel Order
               </Button>
             )}
             {order.status === "CONFIRMED" && (

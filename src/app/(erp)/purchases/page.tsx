@@ -6,9 +6,15 @@ export default async function PurchaseOrdersPage() {
     orderBy: { createdAt: "desc" },
     include: {
       vendor: { select: { name: true } },
-      items: { select: { quantity: true } },
+      items: { select: { quantity: true, unitCost: true } },
     },
   });
 
-  return <PurchasesClient initialData={JSON.parse(JSON.stringify(purchaseOrders))} />;
+  const formattedOrders = purchaseOrders.map((po) => ({
+    ...po,
+    orderNumber: `PO-${po.id.slice(-6).toUpperCase()}`,
+    totalAmount: po.items.reduce((sum, item) => sum + Number(item.quantity) * Number(item.unitCost), 0),
+  }));
+
+  return <PurchasesClient initialData={JSON.parse(JSON.stringify(formattedOrders))} />;
 }

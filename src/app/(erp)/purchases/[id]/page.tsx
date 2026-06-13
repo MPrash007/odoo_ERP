@@ -25,5 +25,11 @@ export default async function PurchaseOrderDetailPage({
     notFound();
   }
 
-  return <PurchaseDetailClient order={JSON.parse(JSON.stringify(order))} />;
+  const formattedOrder = {
+    ...order,
+    orderNumber: `PO-${order.id.slice(-6).toUpperCase()}`,
+    totalAmount: order.items.reduce((sum, item) => sum + Number(item.quantity) * Number(item.unitCost), 0),
+  };
+
+  return <PurchaseDetailClient order={JSON.parse(JSON.stringify(formattedOrder))} />;
 }

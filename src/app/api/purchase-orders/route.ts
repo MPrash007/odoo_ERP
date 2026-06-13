@@ -38,23 +38,27 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const data = purchaseOrderSchema.parse(body);
 
-    const order = await prisma.purchaseOrder.create({
-      data: {
-        vendorId: data.vendorId,
-        createdBy: user.id,
-        items: {
-          create: data.items.map((item) => ({
-            productId: item.productId,
-            quantity: item.quantity,
-            unitCost: item.unitCost,
-          })),
+    const order = await prisma.$transaction(async (tx) => {
+      const o = await tx.purchaseOrder.create({
+        data: {
+          vendorId: data.vendorId,
+          createdBy: user.id,
+          items: {
+            create: data.items.map((item) => ({
+              productId: item.productId,
+              quantity: item.quantity,
+              unitCost: item.unitCost,
+            })),
+          },
         },
-      },
-      include: { vendor: true, items: { include: { product: true } } },
-    });
+        include: { vendor: true, items: { include: { product: true } } },
+      });
 
-    await prisma.auditLog.create({
-      data: { userId: user.id, module: "PURCHASE", action: "ORDER_CREATED", entityId: order.id, newValue: { vendorId: data.vendorId, items: data.items.length } },
+      await tx.auditLog.create({
+        data: { userId: user.id, module: "PURCHASE", action: "ORDER_CREATED", entityId: o.id, newValue: { vendorId: data.vendorId, items: data.items.length } },
+      });
+
+      return o;
     });
 
     return NextResponse.json({ data: order }, { status: 201 });

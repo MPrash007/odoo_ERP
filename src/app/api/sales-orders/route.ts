@@ -43,24 +43,28 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const data = salesOrderSchema.parse(body);
 
-    const order = await prisma.salesOrder.create({
-      data: {
-        customerId: data.customerId,
-        orderDate: data.orderDate,
-        createdBy: user.id,
-        items: {
-          create: data.items.map((item) => ({
-            productId: item.productId,
-            quantity: item.quantity,
-            unitPrice: item.unitPrice,
-          })),
+    const order = await prisma.$transaction(async (tx) => {
+      const o = await tx.salesOrder.create({
+        data: {
+          customerId: data.customerId,
+          orderDate: data.orderDate,
+          createdBy: user.id,
+          items: {
+            create: data.items.map((item) => ({
+              productId: item.productId,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+            })),
+          },
         },
-      },
-      include: { customer: true, items: { include: { product: true } } },
-    });
+        include: { customer: true, items: { include: { product: true } } },
+      });
 
-    await prisma.auditLog.create({
-      data: { userId: user.id, module: "SALES", action: "ORDER_CREATED", entityId: order.id, newValue: { customerId: data.customerId, items: data.items.length } },
+      await tx.auditLog.create({
+        data: { userId: user.id, module: "SALES", action: "ORDER_CREATED", entityId: o.id, newValue: { customerId: data.customerId, items: data.items.length } },
+      });
+
+      return o;
     });
 
     return NextResponse.json({ data: order }, { status: 201 });

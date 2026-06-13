@@ -10,7 +10,7 @@ export const productSchema = z.object({
   costPrice: z.coerce.number().min(0, "Cost price must be non-negative"),
   procurementStrategy: z.enum(["MTS", "MTO"]),
   procurementType: z.enum(["PURCHASE", "MANUFACTURING"]),
-  vendorId: z.string().optional().nullable(),
+  vendorId: z.string().optional().nullable().transform(val => val === "" ? null : val),
 });
 
 export type ProductFormData = z.infer<typeof productSchema>;
@@ -44,7 +44,7 @@ export const salesOrderItemSchema = z.object({
 
 export const salesOrderSchema = z.object({
   customerId: z.string().min(1, "Customer is required"),
-  orderDate: z.coerce.date(),
+  orderDate: z.coerce.date().optional(),
   items: z.array(salesOrderItemSchema).min(1, "At least one item is required"),
 });
 
@@ -90,7 +90,7 @@ export const manufacturingOrderSchema = z.object({
   productId: z.string().min(1, "Product is required"),
   bomId: z.string().min(1, "BoM is required"),
   quantity: z.coerce.number().int().min(1, "Quantity must be at least 1"),
-  assignedTo: z.string().optional().nullable(),
+  assignedTo: z.string().optional().nullable().transform(val => val === "" ? null : val),
 });
 
 export type ManufacturingOrderFormData = z.infer<typeof manufacturingOrderSchema>;
@@ -106,7 +106,7 @@ export type InventoryAdjustmentFormData = z.infer<typeof inventoryAdjustmentSche
 
 // ─── User Validation ────────────────────────────────
 export const userUpdateSchema = z.object({
-  role: z.enum(["ADMIN", "SALES", "PURCHASE", "MANUFACTURING", "INVENTORY", "OWNER"]),
+  role: z.enum(["NONE", "ADMIN", "SALES", "PURCHASE", "MANUFACTURING", "INVENTORY", "OWNER"]),
   position: z.string().optional(),
   status: z.enum(["ACTIVE", "INACTIVE", "SUSPENDED"]),
 });

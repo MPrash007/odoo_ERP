@@ -67,7 +67,10 @@ export async function PATCH(
     });
 
     return NextResponse.json({ data: product });
-  } catch (error: unknown) {
+  } catch (error: any) {
+    if (error.code === 'P2002') {
+      return NextResponse.json({ error: "A product with this SKU already exists." }, { status: 400 });
+    }
     const message = error instanceof Error ? error.message : "Update failed";
     return NextResponse.json({ error: message }, { status: 400 });
   }

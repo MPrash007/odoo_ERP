@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={`${inter.variable} h-full antialiased`}>
-        <body className="min-h-full flex flex-col font-sans">
+        <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
           <TooltipProvider delay={200}>
             {children}
           </TooltipProvider>

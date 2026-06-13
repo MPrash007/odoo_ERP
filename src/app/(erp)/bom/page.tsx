@@ -1,6 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 
 export default async function BoMPage() {
   const boms = await prisma.bom.findMany({
@@ -19,6 +23,12 @@ export default async function BoMPage() {
       <PageHeader
         title="Bills of Materials"
         description="Manage recipes and required components for your manufactured goods."
+        actions={
+          <Link href="/bom/new" className={cn(buttonVariants(), "bg-[#820AD1] hover:bg-[#9013D8]")}>
+            <Plus className="w-4 h-4 mr-2" />
+            Create BoM
+          </Link>
+        }
       />
       <div className="mt-6 border border-[#E0E0E0] rounded-xl bg-white overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
