@@ -68,7 +68,6 @@ const NAV_SECTIONS = [
     items: [
       { title: "User Management", href: "/users", icon: Users },
       { title: "Audit Logs", href: "/audit-logs", icon: ScrollText },
-      { title: "Settings", href: "/settings", icon: Settings },
     ],
   },
 ];

@@ -2,6 +2,7 @@
 
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
+import { AIChatPanel } from "@/components/ai/ai-chat-panel";
 import { useSidebarStore } from "@/stores";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +27,10 @@ export function ERPLayoutClient({ children }: { children: React.ReactNode }) {
         {/* Page Content */}
         <main className="flex-1">{children}</main>
       </div>
+
+      {/* AI Chat Panel (slides in from right) */}
+      <AIChatPanel />
     </div>
   );
 }
+
