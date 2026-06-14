@@ -28,6 +28,10 @@ export default async function PurchaseOrderDetailPage({
 
   const currentUser = await getCurrentUser();
 
+  if (currentUser.role === "VENDOR" && order.vendorId !== currentUser.vendorId) {
+    notFound(); // Hide the existence of the order
+  }
+
   const formattedOrder = {
     ...order,
     orderNumber: `PO-${order.id.slice(-6).toUpperCase()}`,

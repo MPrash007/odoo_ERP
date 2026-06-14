@@ -1,8 +1,13 @@
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import { PurchasesClient } from "./purchases-client";
 
 export default async function PurchaseOrdersPage() {
+  const user = await getCurrentUser();
+  const where = user.role === "VENDOR" ? { vendorId: user.vendorId || "invalid-vendor" } : {};
+
   const purchaseOrders = await prisma.purchaseOrder.findMany({
+    where,
     orderBy: { createdAt: "desc" },
     include: {
       vendor: { select: { name: true } },
