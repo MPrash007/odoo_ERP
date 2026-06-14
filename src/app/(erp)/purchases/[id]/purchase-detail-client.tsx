@@ -86,7 +86,7 @@ export function PurchaseDetailClient({ order, currentUserRole }: { order: Order,
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </Link>
-            {order.status === "DRAFT" && (
+            {order.status === "DRAFT" && ["ADMIN", "OWNER", "VENDOR"].includes(currentUserRole || "") && (
               <Button
                 onClick={() => handleAction("confirm")}
                 disabled={isLoading}

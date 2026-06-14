@@ -16,6 +16,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         throw new Error("Unauthorized to confirm this order");
       }
 
+      // Restrict confirmation to Admin, Owner, or Vendor
+      if (user.role !== "ADMIN" && user.role !== "OWNER" && user.role !== "VENDOR") {
+        throw new Error("Access Denied: Only Administrators or the assigned Vendor can confirm Purchase Orders.");
+      }
+
       if (order.status !== "DRAFT") {
         throw new Error("Purchase order must be in DRAFT status to confirm");
       }
